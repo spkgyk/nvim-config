@@ -606,6 +606,11 @@ require('lazy').setup({
             })
           end
 
+          if client and client.name == 'ruff' then
+            -- Disable hover in favor of Pyright
+            client.server_capabilities.hoverProvider = false
+          end
+
           -- The following code creates a keymap to toggle inlay hints in your
           -- code, if the language server you are using supports them
           --
@@ -652,6 +657,7 @@ require('lazy').setup({
       --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
       --  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
       local capabilities = vim.lsp.protocol.make_client_capabilities()
+      capabilities.positionEncoding = 'utf-8'
       capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
       -- Enable the following language servers
@@ -683,13 +689,17 @@ require('lazy').setup({
         zls = {},
 
         -- Python
-        ruff = { settings = { logLevel = 'error' } },
-        pyright = {
+        ruff = {},
+        basedpyright = {
           settings = {
-            pyright = { disableOrganizeImports = true, analysis = { logLevel = 'Error', typeCheckingMode = 'off', ignore = { '*' } } },
+            basedpyright = {
+              disableOrganizeImports = true,
+              analysis = {
+                ignore = { '*' },
+              },
+            },
           },
         },
-
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
